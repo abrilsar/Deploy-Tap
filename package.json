@@ -14,7 +14,7 @@
     "@types/babel-types": "^7.0.15",
     "prettier": "^3.2.5",
     "tailwind-scrollbar": "^3.1.0",
-    "turbo": "latest"
+    "turbo": "^1.13.3"
   },
   "engines": {
     "node": ">=18"
