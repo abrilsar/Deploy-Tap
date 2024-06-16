@@ -15,9 +15,9 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
-  pages: {
-    signIn: '/auth-error',
-  },
+  // pages: {
+  //   signIn: '/auth-error',
+  // },
   providers: [
     GitHubProvider({
       clientId: process.env.GITHUB_ID as string,
