@@ -134,7 +134,7 @@ async function deleteFile(filePath: string) {
 
 async function generateSSHKeys(file_path: string) {
   if (process.env.NODE_ENV as string === 'production') {
-    childProcess.exec(`mkdir -p ${file_path}`, (error, stdout, stderr) => {
+    childProcess.exec(`sudo mkdir -p ${file_path}`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error al crear el directorio: ${error}`);
         return;
@@ -150,8 +150,7 @@ async function generateSSHKeys(file_path: string) {
     }
   }
   return new Promise((resolve, reject) => {
-    // exec(`${process.env.NODE_ENV as string === 'production'?'sudo ':''}ssh-keygen -f ${file_path}/id_rsa -N ""`, (error: ExecException | null, stdout: string, stderr: string) => {
-    exec(`ssh-keygen -f ${file_path}/id_rsa -N ""`, (error: ExecException | null, stdout: string, stderr: string) => {
+    exec(`${process.env.NODE_ENV as string === 'production'?'sudo ':''}ssh-keygen -f ${file_path}/id_rsa -N ""`, (error: ExecException | null, stdout: string, stderr: string) => {
       if (error) {
         reject(error);
       } else {
@@ -196,7 +195,7 @@ interface props {
 
 async function folderExists(folderPath: string) {
   try {
-    await ejecutarComando(`test -d ${folderPath}`);
+    await ejecutarComando(`sudo test -d ${folderPath}`);
     return true;
   } catch (error) {
     return false;
@@ -219,7 +218,7 @@ async function deleteFolder(folderPath: string) {
   if (process.env.NODE_ENV as string === 'production') {
     if (await folderExists(folderPath)) {
       try {
-        await ejecutarComando(`rm -rf ${folderPath}`);
+        await ejecutarComando(`sudo rm -rf ${folderPath}`);
         console.log('Carpeta eliminada correctamente');
       } catch (error) {
         console.log('No se pudo eliminar la carpeta:', error);
