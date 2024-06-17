@@ -1,5 +1,6 @@
 FROM node:20-alpine AS base
 RUN apk add --no-cache git libc6-compat
+RUN apk add --no-cache sudo
 RUN apk update
 ENV SCOPE=@avila-tek/api
 
@@ -34,6 +35,7 @@ WORKDIR /app
 
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
+RUN usermod -aG sudo expressjs
 USER expressjs
 
 COPY --chown=expressjs --from=installer /app .
