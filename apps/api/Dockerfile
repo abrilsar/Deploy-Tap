@@ -6,6 +6,12 @@ ENV SCOPE=@avila-tek/api
 
 FROM base AS builder
 RUN apk add --no-cache libc6-compat
+# Install terraform
+RUN apk add --no-cache wget unzip
+RUN wget https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip
+RUN unzip terraform_0.15.4_linux_amd64.zip
+RUN mv terraform /usr/local/bin/
+RUN terraform version
 # Set working directory
 WORKDIR /app
 COPY . .
