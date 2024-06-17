@@ -1,5 +1,5 @@
 FROM node:20-alpine AS base
-RUN apk add --no-cache git libc6-compat
+RUN apk add --no-cache git libc6-compat openssh
 RUN apk update
 ENV SCOPE=@avila-tek/api
 
@@ -17,7 +17,6 @@ WORKDIR /app
 COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
 COPY --from=builder /app/out/package-lock.json ./package-lock.json
-COPY /usr/bin/ssh-keygen /usr/bin/ssh-keygen
 RUN npm ci --no-audit
 
 # Build the project and its dependencies
