@@ -32,9 +32,6 @@ export default function Field({
   const { appList } = envState;
   const inputRef = useRef<HTMLInputElement>(null);
   const [projectNames, setProjecNames] = useState<string[]>([]);
-  //   const [domainValue, setDomainValue] = useState("");
-  //   const [countappList, setCountappList] = useState(appList.length);
-  // const [hasSpecialChars, setHasSpecialChars] = useState<boolean>(true);
 
   useEffect(() => {
     if (name === "domain") {
