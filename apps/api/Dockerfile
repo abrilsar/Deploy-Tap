@@ -35,7 +35,6 @@ WORKDIR /app
 
 RUN addgroup --system --gid 1001 expressjs
 RUN adduser --system --uid 1001 expressjs
-RUN usermod -aG sudo expressjs
 USER expressjs
 
 COPY --chown=expressjs --from=installer /app .
