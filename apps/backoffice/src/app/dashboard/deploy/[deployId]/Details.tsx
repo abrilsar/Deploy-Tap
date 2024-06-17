@@ -34,7 +34,6 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
-import { FitAddon } from "@xterm/addon-fit";
 interface DetailsProps {
   deploy: Deploy;
   changes: boolean;
@@ -748,8 +747,6 @@ function AcordionDeploy({
   useEffect(() => {
     if (terminalRef!.current) {
       xterm.current = new Terminal({ scrollback: 9999999 });
-      // const fitAddon = new FitAddon();
-      // xterm.current.loadAddon(fitAddon);
       const newValue = xterm.current.options.theme;
       newValue!.foreground = "#000000";
       xterm.current.options.theme = { ...newValue };
@@ -765,7 +762,16 @@ function AcordionDeploy({
 
       xterm.current.open(terminalRef.current);
       xterm.current.textarea?.setAttribute("readonly", "true"); // Establecer el atributo readonly
-      // fitAddon.fit();
+      const resizeObserver = new ResizeObserver(() => {
+        const { clientWidth, clientHeight } = terminalRef.current!;
+        xterm.current!.resize(
+          Math.floor(clientWidth / 10),
+          Math.floor(clientHeight / 18)
+        );
+      });
+
+      resizeObserver.observe(terminalRef.current);
+
       setAllow(true);
     }
 
