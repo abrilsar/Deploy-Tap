@@ -12,15 +12,31 @@ COPY . .
 RUN npx turbo prune ${SCOPE} --docker
 
 # Install terraform and executable
-FROM ubuntu:latest
-RUN apk add --no-cache wget
-RUN apk add --no-cache unzip
-RUN apk add --no-cache vim
-RUN wget https://releases.hashicorp.com/terraform/1.7.4/terraform_1.7.4_linux_amd64.zip
-RUN unzip terraform_1.7.4_linux_amd64.zip
-RUN mv terraform /usr/local/bin/
-RUN chmod +x /usr/local/bin/terraform
-RUN terraform --version 
+ARG TERRAFORM_VERSION=1.7.4
+
+RUN \
+    # Update
+    apt-get update -y && \
+    # Install dependencies
+    apt-get install unzip wget -y
+
+################################
+# Install Terraform
+################################
+
+# Download terraform for linux
+RUN wget --progress=dot:mega https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+RUN \
+    # Unzip
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    # Move to local bin
+    mv terraform /usr/local/bin/ && \
+    # Make it executable
+    chmod +x /usr/local/bin/terraform && \
+    # Check that it's installed
+    terraform --version
+
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
@@ -50,7 +66,6 @@ RUN mkdir -p /etc/.ssh && chown expressjs:expressjs /etc/.ssh
 USER expressjs
 
 COPY --chown=expressjs --from=installer /app .
-COPY --from=ubuntu /usr/local/bin/terraform /usr/local/bin/terraform
 
 WORKDIR /app/apps/api
 
