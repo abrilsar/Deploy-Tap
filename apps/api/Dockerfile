@@ -16,9 +16,10 @@ FROM ubuntu:latest
 RUN apk add --no-cache wget
 RUN apk add --no-cache unzip
 RUN apk add --no-cache vim
-RUN wget https://releases.hashicorp.com/terraform/0.11.11/terraform_0.11.11_linux_amd64.zip
-RUN unzip terraform_0.11.11_linux_amd64.zip
+RUN wget https://releases.hashicorp.com/terraform/1.7.4/terraform_1.7.4_linux_amd64.zip
+RUN unzip terraform_1.7.4_linux_amd64.zip
 RUN mv terraform /usr/local/bin/
+RUN chmod +x /usr/local/bin/terraform
 RUN terraform --version 
 
 # Add lockfile and package.json's of isolated subworkspace
