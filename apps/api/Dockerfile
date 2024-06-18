@@ -11,7 +11,7 @@ WORKDIR /app
 COPY . .
 RUN npx turbo prune ${SCOPE} --docker
 
-# Install terraform
+# Install terraform and executable
 FROM ubuntu:latest
 RUN apk add --no-cache wget
 RUN apk add --no-cache unzip
