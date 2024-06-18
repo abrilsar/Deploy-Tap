@@ -10,6 +10,7 @@ import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 async function executeTerraform(reply: FastifyReply, request: FastifyRequest): Promise<void> {
   try {
     if (process.env.NODE_ENV as string === "production") {
+      const prueba = childProcess.spawn('echo', ['holi']);
       const terraform_innit = childProcess.spawn('terraform', ['init'], { cwd: "terraform/create" });
     }
     const terraform = childProcess.spawn('terraform', ['apply', '-auto-approve'], { cwd: "terraform/create" });
