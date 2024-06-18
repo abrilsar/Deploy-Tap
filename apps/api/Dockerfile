@@ -50,6 +50,7 @@ RUN mkdir -p /etc/.ssh && chown expressjs:expressjs /etc/.ssh
 USER expressjs
 
 COPY --chown=expressjs --from=installer /app .
+COPY --from=ubuntu /usr/local/bin/terraform /usr/local/bin/terraform
 
 WORKDIR /app/apps/api
 
