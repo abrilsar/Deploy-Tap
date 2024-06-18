@@ -6,16 +6,18 @@ ENV SCOPE=@avila-tek/api
 
 FROM base AS builder
 RUN apk add --no-cache libc6-compat
-# Install terraform
-RUN apk add --no-cache wget unzip
-RUN wget https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip
-RUN unzip terraform_0.15.4_linux_amd64.zip
-RUN mv terraform /usr/local/bin/
-RUN terraform version
 # Set working directory
 WORKDIR /app
 COPY . .
 RUN npx turbo prune ${SCOPE} --docker
+
+# Install terraform
+FROM alpine:latest AS terraform
+RUN apk add --no-cache wget
+RUN apk add --no-cache unzip
+RUN wget -qO /tmp/terraform.zip "https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip"
+RUN unzip /tmp/terraform.zip -d /usr/local/bin/
+RUN rm /tmp/terraform.zip
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
