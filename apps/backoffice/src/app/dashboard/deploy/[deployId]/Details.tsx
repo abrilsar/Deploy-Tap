@@ -94,7 +94,7 @@ export default function Details({ deploy, changes, setChanges }: DetailsProps) {
   const [output, setOutput] = useState("");
   const terminalRef = useRef<HTMLDivElement>(null);
   const xterm = useRef<Terminal | null>(null);
-  const [openDeploy, setOpenDeploy] = useState(true);
+  const [openDeploy, setOpenDeploy] = useState(false);
 
   useEffect(() => {
     const getOutput = async () => {
@@ -460,10 +460,13 @@ function Drop({
       xterm.current?.writeln(
         pull
           ? "\n----------- Updating -----------\n"
-          : "\n----------- Roolback -----------\n"
+          : "\n----------- Rollback -----------\n"
       );
-      // setNewOutput((prevOutput: string) => ${prevOutput}\n${pull ? '----------- Updating -----------\n' : '----------- Roolback -----------\n'});
-      newOutput = `${newOutput}\n${pull ? "----------- Updating -----------\n" : "----------- Roolback -----------\n"}`;
+      xterm.current?.writeln("Installing plugins\n");
+      xterm.current?.writeln("This might take a few minutes...\n");
+      xterm.current?.writeln(" ");
+      // setNewOutput((prevOutput: string) => ${prevOutput}\n${pull ? '----------- Updating -----------\n' : '----------- Rollback -----------\n'});
+      newOutput = `${newOutput}\n${pull ? "----------- Updating -----------\n" : "----------- Rollback -----------\n"}`;
 
       return new Promise((resolve, reject) => {
         const eventSource = new EventSource(
@@ -492,7 +495,14 @@ function Drop({
           }
         };
       });
-    } catch (error) {}
+    } catch (error) {
+      try {
+        await axios.post("/v1/drive/update", {
+          fileId: deploy.terraform_output,
+          newContent: newOutput,
+        });
+      } catch (error) {}
+    }
   };
 
   const handleYes = async () => {
@@ -585,7 +595,7 @@ function Drop({
     return (
       <Dropdown
         className="flex items-center justify-center w-full text-base font-semibold h-full bg-white rounded-md border-2 border-customColor hover:bg-gray-100 focus:outline-none"
-        title="View Changes"
+        title="Apply Changes"
         text="New changes are available. Do you want to accept them?"
         handleYes={handleYes}
         handleNo={handleNo}
@@ -594,7 +604,7 @@ function Drop({
   } else {
     return (
       <Dropdown
-        className="flex items-center justify-center w-3/5 xs:w-2/5 px-8 py-2 text-base font-semibold rounded-md bg-white border-2 border-customColor text-gray-800 hover:bg-indigo-500   focus:outline-none focus:ring-1 focus:ring-customColor focus:ring-offset-2 active:bg-white"
+        className="flex items-center justify-center w-3/5 xs:w-2/5 px-8 py-2 text-base font-semibold rounded-md bg-white border-2 border-customColor text-gray-800 hover:bg-indigo-500 focus:outline-none focus:ring-1 focus:ring-customColor focus:ring-offset-2 active:bg-white"
         title="Rollback"
         text="This will stop your project and rollback to the last commit. Are you sure?"
         handleYes={handleYes}
@@ -663,11 +673,13 @@ function Dropdown({
               name="Yes"
               callback={handleYes}
               setIsLoading={setIsLoading}
+              title={title}
             />
             <MenuItems
               name="No"
               callback={handleNo}
               setIsLoading={setIsLoading}
+              title={title}
             />
           </ul>
         </Menu.Items>
@@ -680,9 +692,10 @@ interface MenuItemProps {
   name: string;
   callback: () => Promise<void>;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  title: string;
 }
 
-function MenuItems({ name, callback, setIsLoading }: MenuItemProps) {
+function MenuItems({ name, callback, setIsLoading, title }: MenuItemProps) {
   const handleClick = async () => {
     setIsLoading(true);
     await callback();
@@ -691,7 +704,7 @@ function MenuItems({ name, callback, setIsLoading }: MenuItemProps) {
   return (
     <Menu.Item>
       {({ active }: { active: boolean }) => (
-        <div
+        <a
           className={classNames(
             active ? "bg-gray-100 text-gray-900" : "text-gray-700",
             "block px-4 py-2 text-sm",
@@ -700,9 +713,10 @@ function MenuItems({ name, callback, setIsLoading }: MenuItemProps) {
             "overflow-ellipsis"
           )}
           onClick={handleClick}
+          href={`${title !== "Delete" ? "#deploy-details" : ""}`}
         >
           {name}
-        </div>
+        </a>
       )}
     </Menu.Item>
   );
@@ -745,7 +759,7 @@ function AcordionDeploy({
   }, [output, allow]);
 
   useEffect(() => {
-    if (terminalRef!.current) {
+    if (terminalRef.current) {
       xterm.current = new Terminal({ scrollback: 9999999 });
       const newValue = xterm.current.options.theme;
       newValue!.foreground = "#000000";
@@ -763,11 +777,13 @@ function AcordionDeploy({
       xterm.current.open(terminalRef.current);
       xterm.current.textarea?.setAttribute("readonly", "true"); // Establecer el atributo readonly
       const resizeObserver = new ResizeObserver(() => {
-        const { clientWidth, clientHeight } = terminalRef.current!;
-        xterm.current!.resize(
-          Math.floor(clientWidth / 10),
-          Math.floor(clientHeight / 18)
-        );
+        if (terminalRef.current) {
+          const { clientWidth, clientHeight } = terminalRef.current!;
+          xterm.current!.resize(
+            Math.floor(clientWidth / 10),
+            Math.floor(clientHeight / 18)
+          );
+        }
       });
 
       resizeObserver.observe(terminalRef.current);

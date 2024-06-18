@@ -14,6 +14,8 @@ async function executeTerraform(reply: FastifyReply, request: FastifyRequest): P
 
       terraform_init.on('exit', (code) => {
         if (code === 0) {
+          const aux = 'Building...'
+          reply.raw.write(`data: ${aux}\n\n`);
           const terraform_apply = childProcess.spawn('terraform', ['apply', '-auto-approve'], { cwd: "terraform/create" });
 
           terraform_apply.stdout.on('data', (data: Buffer) => {
@@ -65,37 +67,58 @@ async function executeTerraform(reply: FastifyReply, request: FastifyRequest): P
 async function executeTerraformPullRequest(reply: FastifyReply, request: FastifyRequest): Promise<void> {
   try {
     if (process.env.NODE_ENV as string === "production") {
-      const terraform_innit = childProcess.spawn('terraform', ['init'], { cwd: "terraform/create" });
-    }
-    const terraform = childProcess.spawn('terraform', ['apply', '-auto-approve'], { cwd: `terraform/pull_request` });
-    terraform.stdout.on('data', (data: Buffer) => {
-      console.log(`Terraform output: ${data.toString()}`);
-      reply.raw.write(`data: ${data.toString()}\n\n`)
-    });
-    terraform.stderr.on('data', (data: Buffer) => {
-      console.error(`Terraform error: ${data.toString()}`);
-      reply.raw.write(`data: ${data.toString()}\n\n`)
+      const terraform_init = childProcess.spawn('terraform', ['init'], { cwd: "terraform/pull_request" });
 
-    });
-    await new Promise<void>((resolve, reject) => {
-      terraform.on('close', (code: number) => {
+      terraform_init.on('exit', (code) => {
         if (code === 0) {
-          reply.raw.write(`data: ${'Terraform process completed successfully'}\n\n`)
-          resolve();
+          const aux = 'Building...'
+          reply.raw.write(`data: ${aux}\n\n`);
+          const terraform_apply = childProcess.spawn('terraform', ['apply', '-auto-approve'], { cwd: "terraform/pull_request" });
+
+          terraform_apply.stdout.on('data', (data: Buffer) => {
+            console.log(`Terraform output: ${data.toString()}`);
+            reply.raw.write(`data: ${data.toString()}\n\n`);
+          });
+
+          terraform_apply.stderr.on('data', (data: Buffer) => {
+            console.error(`Terraform error: ${data.toString()}`);
+            reply.raw.write(`data: ${data.toString()}\n\n`);
+          });
+
+          terraform_apply.on('close', (code: number) => {
+            if (code === 0) {
+              reply.raw.write(`data: ${'Terraform process completed successfully'}\n\n`);
+            } else {
+              reply.raw.write(`data: ${'Terraform process failed with code: ' + code}\n\n`);
+            }
+            reply.raw.end();
+          });
         } else {
-          reject(new Error(`Terraform failed with code ${code}`));
+          reply.raw.write(`data: ${'Terraform init failed with code: ' + code}\n\n`);
+          reply.raw.end();
         }
       });
-    });
-  } catch (error) {
-    reply.raw.write(`data: ${'Terraform process failed'}\n\n`)
+
+      terraform_init.stdout.on('data', (data: Buffer) => {
+        console.log(`Terraform apply output: ${data.toString()}`);
+      });
+
+      terraform_init.stderr.on('data', (data: Buffer) => {
+        console.error(`Terraform apply error: ${data.toString()}`);
+      });
+    } else {
+      reply.raw.write(`data: ${'Not in production environment. Skipping Terraform execution.'}\n\n`);
+      reply.raw.end();
+    }
+  } catch (error: any) {
+    reply.raw.write(`data: ${'Terraform process failed'}\n\n`);
     reply.raw.end();
-    throw new Error('500-Terraform Failed');
+    throw error;
   }
 
   request.raw.on('close', () => {
-    console.log('terminó')
-  })
+    console.log('Request closed');
+  });
 }
 
 async function createScript(envState: EnvState) {

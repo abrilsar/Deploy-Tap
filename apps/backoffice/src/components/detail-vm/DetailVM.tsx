@@ -215,15 +215,19 @@ export default function DetailVM() {
       xterm.current.open(terminalRef.current);
       xterm.current.textarea?.setAttribute("readonly", "true"); // Establecer el atributo readonly
       const resizeObserver = new ResizeObserver(() => {
-        const { clientWidth, clientHeight } = terminalRef.current!;
-        xterm.current!.resize(
-          Math.floor(clientWidth / 10),
-          Math.floor(clientHeight / 18)
-        );
+        if (terminalRef.current) {
+          const { clientWidth, clientHeight } = terminalRef.current!;
+          xterm.current!.resize(
+            Math.floor(clientWidth / 10),
+            Math.floor(clientHeight / 18)
+          );
+        }
       });
 
       resizeObserver.observe(terminalRef.current);
-      xterm.current?.writeln("Building...\n");
+      xterm.current?.writeln("Installing plugins\n");
+      xterm.current?.writeln("This might take a few minutes...\n");
+      xterm.current?.writeln("\n----------------------\n");
     }
 
     return () => {
