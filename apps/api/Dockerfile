@@ -1,7 +1,17 @@
 FROM node:20-alpine AS base
 RUN apk add --no-cache git libc6-compat
 RUN apk add --no-cache openssh-client
+RUN apk add --no-cache wget
+RUN apk add --no-cache unzip
 RUN apk update
+
+# Descargar e instalar Terraform
+RUN wget https://releases.hashicorp.com/terraform/1.0.5/terraform_1.0.5_linux_amd64.zip
+RUN unzip terraform_1.0.5_linux_amd64.zip && rm terraform_1.0.5_linux_amd64.zip
+RUN mv terraform /usr/bin/terraform
+# Dar permisos de lectura y ejecución al usuario expressjs sobre el binario de Terraform
+RUN chmod +rx /usr/bin/terraform
+
 ENV SCOPE=@avila-tek/api
 
 FROM base AS builder
@@ -10,18 +20,6 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY . .
 RUN npx turbo prune ${SCOPE} --docker
-
-# Install terraform and executable
-FROM ubuntu:latest
-
-RUN apk add --no-cache wget
-RUN apk add --no-cache unzip
-RUN apk add --no-cache vim
-RUN wget https://releases.hashicorp.com/terraform/1.7.4/terraform_1.7.4_linux_amd64.zip
-RUN unzip terraform_1.7.4_linux_amd64.zip
-RUN mv terraform /usr/local/bin/
-RUN chmod +x /usr/local/bin/terraform
-RUN terraform --version 
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
