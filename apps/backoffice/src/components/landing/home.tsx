@@ -4,13 +4,15 @@ import { DashBoardPageUrl, SignInPageUrl } from "@/constants/urls";
 import { useSession } from "next-auth/react";
 import About from "@/components/about/About";
 import Companies from "@/components/about/Companies";
+import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 export default function Home() {
   const { data: session } = useSession();
 
   return (
     <div className="bg-bgColor">
-      <div className="relative isolate px-6 pt-14 lg:px-8">
+      <div className="relative isolate px-6 pt-10 lg:px-8">
         <div
           className="absolute -top-60 -left-10 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
           aria-hidden="true"
@@ -34,20 +36,29 @@ export default function Home() {
                 of your services with GitOps
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                <a
-                  href={session ? DashBoardPageUrl : SignInPageUrl}
-                  className="rounded-md bg-customColor px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-customColor focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customColor"
-                >
-                  Get started
-                </a>
+                <div className="flex gap-x-3">
+                  <Link
+                    href={session ? DashBoardPageUrl : SignInPageUrl}
+                    className="rounded-md bg-customColor px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customColor"
+                  >
+                    Get started
+                  </Link>
+                  <a
+                    href="/#process"
+                    className="flex items-center rounded-md bg-white border border-gray-300 text-customColor px-3.5 py-2.5 text-sm font-semibold shadow-sm hover:bg-customColor hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customColor"
+                  >
+                    Learn more
+                    <ArrowUpRightIcon className="w-3 ml-1" />
+                  </a>
+                </div>
               </div>
             </div>
-            <div className="hidden pt-10 md:flex justify-center md:col-span-3">
-              <img src="deploy.png" className="w-3/5 self-center" />
+            <div className="hidden pt-0 md:flex justify-center md:col-span-3">
+              <img src="landing3.png" className="w-3/5 self-center" />
             </div>
           </div>
           <div className="pt-10 md:hidden">
-            <img src="deploy.png" className="w-96" />
+            <img src="landing3.png" className="w-96" />
           </div>
         </div>
         <Features />
@@ -92,22 +103,6 @@ export default function Home() {
               />
             </div>
           </div>
-          {/* Parrafito de dockerfile
-          <div className="mb-16 mx-auto max-w-4xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-indigo-600">
-              Deploy-tap
-            </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Everything starts with your Docker configuration.
-            </p>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              To carry out a successful application deployment, it is vitally
-              important to have a proper Docker configuration, which includes
-              the correct preparation of your Dockerfile and docker-compose. Be
-              sure to consult the Docker documentation relevant to your specific
-              framework to ensure optimal performance.
-            </p>
-          </div> */}
           <Companies />
           <div
             className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"

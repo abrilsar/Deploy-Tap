@@ -430,7 +430,6 @@ interface DropProps {
   setLastCommit: Dispatch<SetStateAction<string>>;
   pull: boolean;
   setCheckRollback?: Dispatch<SetStateAction<boolean>>;
-  // terminalRef?: React.RefObject<HTMLDivElement>
   xterm: React.MutableRefObject<Terminal | null>;
   setDeployOpen?: Dispatch<SetStateAction<boolean>>;
 }
@@ -447,7 +446,6 @@ function Drop({
   const axiosAuth = useAxiosAuth();
   const router = useRouter();
   const privateWords = ["dns_digitalocean_token", "myuser", "password"];
-  // const [newOutput, setNewOutput] = useState('')
   let newOutput = "";
   const handleUpdateTerraform = async () => {
     try {
@@ -465,7 +463,6 @@ function Drop({
       xterm.current?.writeln("Installing plugins\n");
       xterm.current?.writeln("This might take a few minutes...\n");
       xterm.current?.writeln(" ");
-      // setNewOutput((prevOutput: string) => ${prevOutput}\n${pull ? '----------- Updating -----------\n' : '----------- Rollback -----------\n'});
       newOutput = `${newOutput}\n${pull ? "----------- Updating -----------\n" : "----------- Rollback -----------\n"}`;
 
       return new Promise((resolve, reject) => {
@@ -507,9 +504,6 @@ function Drop({
 
   const handleYes = async () => {
     try {
-      // await axios.post(/v1/terraform/pullRequest/${pull}, deploy)
-      // await axios.post('/v1/terraform/delete', './terraform/pull_request/terraform.tfstate')
-      // const response = await axios.post('/v1/terraform/deployPullRequest', 'pull_request')
       if (setDeployOpen) setDeployOpen(true);
       await handleUpdateTerraform().then(async (response: any) => {
         try {
@@ -520,9 +514,6 @@ function Drop({
         } catch (error) {}
         checkCommit("yes", pull, response ? "Deployed" : "Failed");
       });
-      // console.log('Response: ', response)
-      // checkCommit('yes', pull, 'Deployed')
-      // toast.success("Successfully updated!")
     } catch (error) {
       toast.error("This didn't work.");
       router.push(DashBoardPageUrl);

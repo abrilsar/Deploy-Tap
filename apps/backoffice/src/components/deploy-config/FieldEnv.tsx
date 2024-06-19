@@ -152,11 +152,9 @@ export default function FieldEnv({
         </div>
         <button
           type="submit"
-          // mt-6 sm:mt-0 rounded-md px-2.5 py-1.5  Valores de antess
           className={`sm:mt-0 sm:mb-0.5 rounded-md text-sm font-semibold shadow-sm ${msjButton === "add" ? "py-0.5 px-2 md:px-5 mt-2" : "py-0.5 px-2.5 mt-3"} ${msjButton === "delete" ? "bg-white border-2 border-red-400 text-black hover:bg-red-400" : "bg-customColor border-2 border-customColor text-white hover:bg-customColor"} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-customColor`}
           onClick={handleClick}
         >
-          {/* {msjButton} */}
           <TrashIcon
             className={`w-5 ${msjButton === "delete" ? "inline" : "hidden"} md:hidden`}
           />
