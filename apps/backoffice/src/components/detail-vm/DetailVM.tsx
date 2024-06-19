@@ -227,7 +227,7 @@ export default function DetailVM() {
       resizeObserver.observe(terminalRef.current);
       xterm.current?.writeln("Installing plugins\n");
       xterm.current?.writeln("This might take a few minutes...\n");
-      xterm.current?.writeln("\n----------------------\n");
+      // xterm.current?.writeln("\n----------------------\n");
     }
 
     return () => {

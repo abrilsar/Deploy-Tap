@@ -327,7 +327,7 @@ export default function Details({ deploy, changes, setChanges }: DetailsProps) {
           <AcordionDomain deploy={deploy} />
         </div>
       </div>
-      <div className="flex justify-end px-8 pb-6">
+      <div id="delete" className="flex justify-end px-8 pb-6">
         {checkRollback && (
           <Drop
             deploy={deploy}
@@ -704,7 +704,7 @@ function MenuItems({ name, callback, setIsLoading, title }: MenuItemProps) {
             "overflow-ellipsis"
           )}
           onClick={handleClick}
-          href={`${title !== "Delete" ? "#deploy-details" : ""}`}
+          href={`${title !== "Delete" ? "#deploy-details" : "#delete"}`}
         >
           {name}
         </a>
