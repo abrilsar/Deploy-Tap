@@ -48,7 +48,7 @@ const WebPreview = ({ url, domain }: { url: string; domain: string }) => {
     const websiteUrl = encodeURIComponent(url);
     fetch(
       `
-      https://api.screenshotmachine.com/?key=${apiKey}&url=${websiteUrl}&dimension=1024x768
+      https://api.screenshotmachine.com/?key=${apiKey}&url=${websiteUrl}&dimension=1024x768&cacheLimit=0
       
       `
     )
@@ -844,7 +844,10 @@ function AcordionDomain({ deploy }: { deploy: Deploy }) {
             </div>
             <ul className="flex flex-col">
               {deploy.apps.map((app, key) => {
-                const domain = `https://${app.name}.deploytap.site`;
+                const domain =
+                  app.name === ""
+                    ? `https://deploytap.site`
+                    : `https://${app.name}.deploytap.site`;
                 return (
                   <div key={key} className="flex gap-x-4">
                     <LinkIcon
