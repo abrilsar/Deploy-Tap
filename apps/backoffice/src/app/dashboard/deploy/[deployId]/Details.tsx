@@ -48,7 +48,7 @@ const WebPreview = ({ url, domain }: { url: string; domain: string }) => {
     const websiteUrl = encodeURIComponent(url);
     fetch(
       `
-      https://api.screenshotmachine.com/?key=${apiKey}&url=${websiteUrl}&dimension=1024x768&cacheLimit=0
+      https://api.screenshotmachine.com/?key=${apiKey}&url=${websiteUrl}&dimension=1024x768
       
       `
     )
